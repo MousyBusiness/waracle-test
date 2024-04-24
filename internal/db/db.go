@@ -1,4 +1,3 @@
-// Package ds abstracts the GCP Datastore library to improve testability
 package db
 
 import (

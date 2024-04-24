@@ -53,6 +53,7 @@ func NewCake(name, comment, imageURL string, yumFactor int) (*Cake, error) {
 	}, nil
 }
 
+// CreateCake creates a cake entity in Datastore
 func CreateCake(ctx context.Context, db db.Database, c *Cake) error {
 	if _, err := db.CreateNamed(ctx, namespace, strconv.Itoa(c.ID), nil, c); err != nil {
 		return err
@@ -60,6 +61,7 @@ func CreateCake(ctx context.Context, db db.Database, c *Cake) error {
 	return nil
 }
 
+// GetCake gets a cake entity from Datastore using the cake ID
 func GetCake(ctx context.Context, db db.Database, id int) (*Cake, error) {
 	var cake Cake
 	if err := db.GetNamed(ctx, namespace, strconv.Itoa(id), nil, &cake); err != nil {
@@ -68,6 +70,7 @@ func GetCake(ctx context.Context, db db.Database, id int) (*Cake, error) {
 	return &cake, nil
 }
 
+// ListCakes lists all cake entities in Datastore
 func ListCakes(ctx context.Context, db db.Database) ([]*Cake, error) {
 	query := datastore.NewQuery(kind)
 	var cakes []*Cake
@@ -83,6 +86,7 @@ type SearchRequest struct {
 	YumFactor *int    `json:"yum_factor"`
 }
 
+// SearchCakes searches Datastore for matching names and yum-factors
 func SearchCakes(ctx context.Context, db db.Database, request SearchRequest) ([]*Cake, error) {
 	query := datastore.NewQuery(kind)
 	if request.Name != nil {
@@ -99,6 +103,7 @@ func SearchCakes(ctx context.Context, db db.Database, request SearchRequest) ([]
 	return cakes, nil
 }
 
+// DeleteCake deletes an entity from datastore using the cake ID
 func DeleteCake(ctx context.Context, db db.Database, id int) error {
 	if err := db.DeleteNamed(ctx, namespace, "Cake", strconv.Itoa(id), nil); err != nil {
 		return err
