@@ -9,22 +9,9 @@ RUN groupadd $APP_USER && useradd -m -g $APP_USER -l $APP_USER
 RUN mkdir -p $APP_HOME && chown -R $APP_USER:$APP_USER $APP_HOME
 USER $APP_USER
 
-# generate .netrc file for private github access
-#ARG ACCESS_TOKEN_USR=""
-#ARG ACCESS_TOKEN_PWD=""
-#RUN printf "machine github.com\n\
-#    login ${ACCESS_TOKEN_USR}\n\
-#    password ${ACCESS_TOKEN_PWD}\n\
-#    \n\
-#    machine api.github.com\n\
-#    login ${ACCESS_TOKEN_USR}\n\
-#    password ${ACCESS_TOKEN_PWD}\n"\
-#    >> $APP_HOME/.netrc
-#RUN chmod 600 $APP_HOME/.netrc
-
 # copy go mod first
 COPY --chown=$APP_USER:$APP_USER  go.mod $APP_HOME
-COPY --chown=$APP_USER:$APP_USER  go.sum $APP_HOME
+#COPY --chown=$APP_USER:$APP_USER  go.sum $APP_HOME
 
 # set working directory app home for go mod
 WORKDIR $APP_HOME
@@ -39,8 +26,6 @@ COPY --chown=$APP_USER:$APP_USER  internal/ $APP_HOME/internal/
 
 # set working directory to specific service
 WORKDIR $APP_HOME/cmd/$SERVICE
-
-
 
 # build
 RUN GOARCH=amd64 GOOS=linux go build -o $SERVICE
@@ -72,8 +57,6 @@ RUN mkdir -p $APP_HOME
 WORKDIR $APP_HOME
 
 COPY --chown=$APP_USER:$APP_USER --from=builder /home/app/cmd/$SERVICE/$SERVICE $APP_HOME
-COPY --chown=$APP_USER:$APP_USER $FIREBASE_CONFIG_FILE $APP_HOME
-
 
 EXPOSE 8080
 
