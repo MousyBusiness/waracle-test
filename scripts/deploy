@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+DIR=$(dirname $0)
+STAGE=dev
+TAG_VERSION="latest"
+REGION="eu-west2"
+USER=$(cat "$DIR/../.gitaccess" | grep 'USER=' | sed 's/USER=//')
+KEY=$(cat "$DIR/../.gitaccess" | grep 'KEY=' | sed 's/KEY=//')
+BUILD="true"
+PUSH="true"
+DEPLOY="true"
+
+while [[ -n "$1" ]]; do
+  case $1 in
+  --build-only)
+    echo "build only"
+    PUSH="false"
+    DEPLOY="false"
+    ;;
+  --build-and-push)
+    echo "build and push"
+    DEPLOY="false"
+    ;;
+  --deploy-only)
+    BUILD="false"
+    PUSH="false"
+    DEPLOY="true"
+    ;;
+  --service)
+    SERVICE=$2
+    shift
+    ;;
+  --stage)
+    STAGE=$2
+    shift
+    ;;
+  *)
+    echo "unexpected arg" && exit 1
+    ;;
+  esac
+  shift
+done
+
+# load project configurations
+. "$DIR/../config/project.config"
+PROJECT_ID="$ROOT_PROJECT_ID-$STAGE"
+
+[[ -z "$SERVICE" ]] && echo "error: require service name" && exit 1
+
+DOCKERFILE=$DIR/../Dockerfile
+
+
+# only run if gcloud is currently set to the correct project id
+[[ $(gcloud config get-value project) != "$PROJECT_ID" ]] && echo "warning: gcloud is not currently configured to $PROJECT_ID" && exit 1
+
+build() {
+  TAG="eu.gcr.io/$PROJECT_ID/${SERVICE}:${TAG_VERSION}"
+  echo "building container with tag: $TAG"
+  docker build -f "$DOCKERFILE" --platform=linux/amd64 --build-arg STAGE="$STAGE" --build-arg SERVICE="$SERVICE" --build-arg ACCESS_TOKEN_USR="$USER" --build-arg ACCESS_TOKEN_PWD="$KEY" -t "$TAG" "$DIR/../"
+}
+
+push() {
+  echo "pushing $TAG to container registry"
+  docker push "$TAG"
+}
+
+deploy(){
+   gcloud run deploy "${SERVICE}-${REGION}" \
+    --region "$REGION" \
+    --allow-unauthenticated \
+    --concurrency 100 \
+    --max-instances 1 \
+    --image "eu.gcr.io/$PROJECT_ID/$SERVICE" \
+}
+
+[[ "$BUILD" == "true" ]] && build
+[[ "$PUSH" == "true" ]] && push
+[[ "$DEPLOY" == "true" ]] && deploy
