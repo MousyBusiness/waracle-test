@@ -5,7 +5,7 @@ set -eo pipefail
 DIR=$(dirname $0)
 STAGE=dev
 TAG_VERSION="latest"
-REGION="eu-west2"
+REGION="europe-west2"
 BUILD="true"
 PUSH="true"
 DEPLOY="true"
