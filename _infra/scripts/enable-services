@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+DIR=$(dirname $0)
+STAGE=dev
+
+while [[ -n $1 ]]; do
+  case $1 in
+  --stage)
+    STAGE=$2
+    shift
+    ;;
+  *)
+    echo "unexpected arg" && exit 1
+    ;;
+  esac
+  shift
+done
+
+# load project configurations
+. $DIR/../../config/project.config
+PROJECT_ID="$ROOT_PROJECT_ID-$STAGE"
+
+# only run if gcloud is currently set to the correct project id
+[[ $(gcloud config get-value project) != "$PROJECT_ID" ]] && echo "warning: gcloud is not currently configured to $PROJECT_ID" && exit 1
+
+[[ -z "$SERVICES" ]] && echo "error: require SERVICES" && exit 1
+
+if ! gcloud projects list | awk '{ print $1 }' | grep -Eq "^${PROJECT_ID}$"; then
+  echo "error: invalid project id" && exit 1
+fi
+
+echo "enabling services for $PROJECT_ID"
+gcloud services --project $PROJECT_ID enable $(echo "$SERVICES" | awk '{ print $1 }') --async
