@@ -28,7 +28,7 @@ func (c *Cake) GetValue() any {
 	return c
 }
 
-// NewCake creates a new Cake instance with the given parameters, validating the constraints.
+// Validate ensures cakes adhere to input constraints
 func (c *Cake) Validate() error {
 
 	if len(c.Name) > 30 {
