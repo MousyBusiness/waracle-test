@@ -5,8 +5,6 @@ import (
 	"context"
 	"errors"
 	"github.com/mousybusiness/waracle-test/internal/db"
-	"math"
-	"math/rand/v2"
 	"strconv"
 )
 
@@ -31,26 +29,19 @@ func (c *Cake) GetValue() any {
 }
 
 // NewCake creates a new Cake instance with the given parameters, validating the constraints.
-func NewCake(name, comment, imageURL string, yumFactor int) (*Cake, error) {
-	id := rand.N[int](math.MaxInt32)
+func (c *Cake) Validate() error {
 
-	if len(name) > 30 {
-		return nil, errors.New("name must be at most 30 characters long")
+	if len(c.Name) > 30 {
+		return errors.New("name must be at most 30 characters long")
 	}
-	if len(comment) > 200 {
-		return nil, errors.New("comment must be at most 200 characters long")
+	if len(c.Comment) > 200 {
+		return errors.New("comment must be at most 200 characters long")
 	}
-	if yumFactor < 1 || yumFactor > 5 {
-		return nil, errors.New("yumFactor must be between 1 and 5")
+	if c.YumFactor < 1 || c.YumFactor > 5 {
+		return errors.New("yumFactor must be between 1 and 5")
 	}
 
-	return &Cake{
-		ID:        id,
-		Name:      name,
-		Comment:   comment,
-		ImageURL:  imageURL,
-		YumFactor: yumFactor,
-	}, nil
+	return nil
 }
 
 // CreateCake creates a cake entity in Datastore

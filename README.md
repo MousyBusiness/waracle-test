@@ -21,6 +21,10 @@
    - Create
 4. Create a default Datastore database
 
+### Testing Deployment
+1. Download [Insomnia](https://insomnia.rest/download)
+2. Import docs/Insomnia_2024-04-24.json
+3. Try hitting the pre-configured endpoints
 
 ##### Dev deploy
 `deploy --stage dev --service api`
