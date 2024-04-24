@@ -11,7 +11,7 @@ USER $APP_USER
 
 # copy go mod first
 COPY --chown=$APP_USER:$APP_USER  go.mod $APP_HOME
-#COPY --chown=$APP_USER:$APP_USER  go.sum $APP_HOME
+COPY --chown=$APP_USER:$APP_USER  go.sum $APP_HOME
 
 # set working directory app home for go mod
 WORKDIR $APP_HOME
