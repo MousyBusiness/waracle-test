@@ -12,6 +12,12 @@
 ### New Environment Set up (GCP project)
 1. Ensure correct gcloud project is configured
 2. Enable services `./scripts/enable-services`
+3. Manually create terraform state bucket matching naming convention `waracle-test-$STAGE-terraform`
+   - Set region to 'europe-west2'
+   - Storage class 'Standard'
+   - Enforce public access prevention
+   - Uniform access
+   - Create
 
 
 ##### Dev deploy
