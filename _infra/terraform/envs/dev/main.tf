@@ -4,7 +4,7 @@ provider "google" {
 }
 
 terraform {
-  required_version = "~>1.5.6"
+  required_version = "~>1.8.2"
     backend "gcs" {
       bucket = "waracle-test-dev-terraform"
     }

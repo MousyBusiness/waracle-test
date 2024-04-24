@@ -1,0 +1,66 @@
+definitions:
+  dao.Cake:
+    properties:
+      comment:
+        description: A comment about the cake, max 200 characters.
+        type: string
+      id:
+        description: Unique identifier for the cake.
+        type: integer
+      image_url:
+        description: URL to an image of the cake.
+        type: string
+      name:
+        description: Name of the cake, max 30 characters.
+        type: string
+      yum_factor:
+        description: Rating from 1 to 5 inclusive.
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Check server live
+  /v1/cake:
+    put:
+      responses:
+        "200":
+          description: deleted
+          schema:
+            type: string
+      summary: Delete cake by ID
+  /v1/cake/{id}:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dao.Cake'
+      summary: Get cake by ID
+  /v1/cakes:
+    get:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dao.Cake'
+            type: array
+      summary: List all cakes
+    post:
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dao.Cake'
+            type: array
+      summary: Search cakes by name and yum-factor
+swagger: "2.0"
